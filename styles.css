@@ -1,0 +1,55 @@
+/*
+  セットアップ手順（必読）
+  1) Supabase プロジェクトを作成し、Project URL と anon public key を取得する。
+  2) app.js 内の SUPABASE_URL と SUPABASE_ANON_KEY を自分の値に置き換える。
+  3) Realtime の Broadcast / Presence はデフォルトで有効。追加設定は不要。
+  4) このサンプルは WebRTC シグナリングを Supabase Realtime の channel でやり取りする。
+     ユーザーの「在室（presence）」管理も Realtime 機能を用いる。
+
+  参考: 接続情報をDBに永続化したい場合のテーブル定義例（任意）
+  -- SQL (Supabase SQL Editor に貼り付け)
+  -- これはデモ用で、RLSは非常に緩いので本番では適切な認可実装が必要
+  -- テーブル: public.connections
+  -- 部屋名、ユーザー名、現在の状態を記録（シグナリングSDP/ICEはRealtimeでやるためDB保存は一般に不要）
+  -- 必要なら JSONB で最後のSDPなどを記録することも可能
+
+  -- CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+  -- create table if not exists public.connections (
+  --   id uuid primary key default uuid_generate_v4(),
+  --   room text not null,
+  --   username text not null,
+  --   status text not null default 'joined', -- joined / left
+  --   joined_at timestamptz not null default now(),
+  --   updated_at timestamptz not null default now()
+  -- );
+  -- alter table public.connections enable row level security;
+  -- create policy "allow all for demo" on public.connections
+  --   for all using (true) with check (true);
+*/
+
+body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; margin: 0; background: #0b1020; color: #e6ecf1; }
+.container { max-width: 880px; margin: 0 auto; padding: 24px; }
+h1 { font-size: 20px; margin: 0 0 16px; }
+.card { background: #121830; border: 1px solid #1e284a; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.hidden { display: none !important; }
+input[type="text"] { background: #0d1330; border: 1px solid #223060; color: #e6ecf1; padding: 10px 12px; border-radius: 8px; outline: none; }
+input[type="password"] { background: #0d1330; border: 1px solid #223060; color: #e6ecf1; padding: 10px 12px; border-radius: 8px; outline: none; }
+button { background: #2a6df6; color: #fff; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+button:disabled { background: #2a6df6aa; cursor: not-allowed; }
+.btn-sec { background: #253258; }
+.pill { background: #192144; padding: 6px 10px; border-radius: 999px; font-size: 12px; }
+.muted { color: #a7b7c7; }
+.room-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+.room { background: #0d1330; border: 1px solid #223060; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.participants { display: flex; gap: 8px; flex-wrap: wrap; }
+.participant { width: 86px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.avatar-circle { width: 56px; height: 56px; border-radius: 9999px; background: #223060; color: #cfe0ff; display: flex; align-items: center; justify-content: center; font-weight: 700; border: 2px solid transparent; transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease; }
+.avatar-initials { font-size: 14px; letter-spacing: 0.5px; }
+.participant .label { font-size: 12px; color: #a7b7c7; text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.avatar-circle.speaking { box-shadow: 0 0 0 3px rgba(42,109,246,.25), 0 0 18px rgba(42,109,246,.55); border-color: #2a6df6; transform: scale(1.06); }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+.log { max-height: 200px; overflow: auto; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; background: #0a0f24; border: 1px solid #1e284a; border-radius: 8px; padding: 8px; }
+audio { display: none; }
+
+

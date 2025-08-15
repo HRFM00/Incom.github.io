@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>インカム</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>インカム</h1>
+
+      <div id="step-config" class="card">
+        <div class="stack">
+          <div class="row">
+            <div class="pill">Config</div>
+            <div class="muted">2つのSupabaseプロジェクトのURL/Keyを設定</div>
+          </div>
+          <div class="stack">
+            <div class="muted">認証/ユーザー用プロジェクト</div>
+            <div class="row">
+              <input id="cfg-auth-url" type="text" placeholder="AUTH Supabase URL (https://xxxxx.supabase.co)" style="min-width:320px" />
+              <input id="cfg-auth-key" type="text" placeholder="AUTH anon key" style="min-width:320px" />
+            </div>
+            <div class="muted">インカム（Realtime/通話）用プロジェクト</div>
+            <div class="row">
+              <input id="cfg-comms-url" type="text" placeholder="COMMS Supabase URL (https://yyyyy.supabase.co)" style="min-width:320px" />
+              <input id="cfg-comms-key" type="text" placeholder="COMMS anon key" style="min-width:320px" />
+            </div>
+            <div class="row">
+              <button id="btn-save-config">保存</button>
+            </div>
+            <div class="muted">保存後、ログインに進みます（ローカルストレージに保存）。</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="step-login" class="card">
+        <div class="stack">
+          <div class="row">
+            <div class="pill">Login</div>
+            <div class="muted">ユーザー名とパスワードでログイン</div>
+          </div>
+          <div class="row">
+            <input id="input-username" type="text" placeholder="ユーザー名" />
+            <input id="input-password" type="password" placeholder="パスワード" />
+            <button id="btn-login">ログイン</button>
+          </div>
+          <div class="muted">ログイン成功後、登録されている氏名で入室できます</div>
+        </div>
+      </div>
+
+      <div id="step-name" class="card">
+        <div class="stack">
+          <div class="row">
+            <div class="pill">Step 1</div>
+            <div class="muted">名前を入力してください</div>
+          </div>
+          <div class="row">
+            <input id="input-name" type="text" placeholder="例: Hanako" />
+            <button id="btn-save-name">決定</button>
+          </div>
+          <div class="muted" id="name-hint">ブラウザのマイク使用許可を求められたら許可してください。</div>
+        </div>
+      </div>
+
+      <div id="step-rooms" class="card hidden">
+        <div class="stack">
+          <div class="row">
+            <div class="pill">Step 2</div>
+            <div class="muted">部屋を選んで入室</div>
+            <button id="btn-logout" class="btn-sec" style="margin-left:auto">ログアウト</button>
+          </div>
+          <div class="room-grid">
+            <div class="room">
+              <div class="row" style="justify-content: space-between;">
+                <div><strong>管理者</strong></div>
+                <button class="btn-join" data-room="Room1">入室</button>
+              </div>
+              <div class="muted" id="count-Room1">参加者: 0</div>
+            </div>
+            <div class="room">
+              <div class="row" style="justify-content: space-between;">
+                <div><strong>スタッフ</strong></div>
+                <button class="btn-join" data-room="Room2">入室</button>
+              </div>
+              <div class="muted" id="count-Room2">参加者: 0</div>
+            </div>
+            <div class="room">
+              <div class="row" style="justify-content: space-between;">
+                <div><strong>バックグラウンド</strong></div>
+                <button class="btn-join" data-room="Room3">入室</button>
+              </div>
+              <div class="muted" id="count-Room3">参加者: 0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="step-in-room" class="card hidden">
+        <div class="stack">
+          <div class="row" style="justify-content: space-between; align-items: center;">
+            <div>
+              <div class="pill">In Room</div>
+              <div style="margin-top:8px;">現在の部屋: <strong id="current-room">-</strong></div>
+              <div class="muted">あなた: <span id="me-name">-</span></div>
+            </div>
+            <div class="row">
+              <button id="btn-leave" class="btn-sec">退室</button>
+              <button id="btn-mute" class="btn-sec">ミュート</button>
+            </div>
+          </div>
+          <div>
+            <div style="margin-bottom:8px;">参加者</div>
+            <div id="participants" class="participants"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 受信音声要素（動的に追加） -->
+      <div id="audios"></div>
+    </div>
+
+    <!-- Supabase JS v2 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- CryptoJS (user-auth-utils の簡易ハッシュで使用) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <!-- Supabaseクライアント生成関数（createSupabaseClient） -->
+    <script src="supabase-client.js"></script>
+    <!-- 添付のログイン管理ロジック -->
+    <script src="user-auth-utils.js"></script>
+    <!-- 本アプリのロジック -->
+    <script src="app.js"></script>
+  </body>
+</html>
+
+
